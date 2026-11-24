@@ -34,7 +34,7 @@ async function bootLive(){
  if(liveConfig.enabled!==true||!liveConfig.apiBase)return;
  try{
   const candidate=new URL(liveConfig.apiBase);if(candidate.protocol!=='https:'||candidate.search||candidate.hash||candidate.pathname!=='/'||candidate.hostname==='www.allyspan.org')return;
-  const res=await fetch(candidate.origin+'/config',{cache:'no-store',credentials:'omit'});if(!res.ok)return;const cfg=await res.json();if(!cfg.open||!cfg.siteKey||cfg.maxAttachmentBytes!==MAX_ATTACHMENT_BYTES)return;
+  const res=await fetch(candidate.origin+'/config',{cache:'no-store',credentials:'omit'});if(!res.ok)throw Error();const cfg=await res.json();if(!cfg.open||!cfg.siteKey||cfg.maxAttachmentBytes!==MAX_ATTACHMENT_BYTES){problem('Submissions are temporarily unavailable. Please try again later.');return;}
   apiBase=candidate.origin;
   const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;
   script.addEventListener('load',()=>{

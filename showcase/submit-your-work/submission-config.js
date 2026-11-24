@@ -1,2 +1,2 @@
-// Enable only after the Worker, privacy notice and real delivery checks are complete.
-window.ALLYSPAN_JOURNAL=Object.freeze({enabled:false,apiBase:""});
+// Public service connection. Credentials are stored only in the Worker.
+window.ALLYSPAN_JOURNAL=Object.freeze({enabled:true,apiBase:"https://allyspan-journal-submissions.ivannestserav-msw.workers.dev"});
