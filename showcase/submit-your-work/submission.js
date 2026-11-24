@@ -46,7 +46,7 @@ async function bootLive(){
    el('preview-dialog').querySelector('p').textContent='Review your details before sending. Nothing is published automatically.';
   });
   script.addEventListener('error',()=>{apiBase='';refreshSend();problem('The security check could not load. Please try again later.');});document.head.append(script);
- }catch{/* Fail closed. No author data is sent while configuration is unavailable. */}
+ }catch{problem('The submission service could not be reached. Please try again later.');}
 }
 function buildPayload(){const data=new FormData(form);form.querySelectorAll('#language-extra[hidden] input,#language-extra[hidden] textarea,#ethics-extra[hidden] textarea').forEach(input=>data.delete(input.name));data.set('submission-id',submissionId);data.set('cf-turnstile-response',securityToken);return data;}
 sendButton.addEventListener('click',async()=>{
