@@ -31,7 +31,7 @@
   background-image:linear-gradient(110deg,#856b25 0%,#856b25 42%,#b19a58 50%,#856b25 58%,#856b25 100%);
   background-size:250% 100%;background-position:100% 50%;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  animation:gold-action-shimmer 1.8s ease-in-out .3s 1 forwards;
+  animation:none;
  }
 }
 @keyframes gold-action-shimmer{from{background-position:100% 50%}to{background-position:-100% 50%}}
@@ -50,9 +50,7 @@
 /* Preserve clipped gold text when older hover rules reset the background. */
 @supports((-webkit-background-clip:text) or (background-clip:text)){
  .submission-main button:not(:disabled):hover,
- .submission-main button:not(:disabled):focus-visible,
- .submission-main .gold-button:hover,
- .submission-main .gold-button:focus-visible{
+ .submission-main .gold-button:hover{
   background-image:linear-gradient(110deg,#856b25 0%,#856b25 42%,#b19a58 50%,#856b25 58%,#856b25 100%);
   background-color:transparent;background-size:250% 100%;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
