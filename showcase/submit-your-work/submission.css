@@ -24,7 +24,7 @@
 }
 .submission-main button:hover,.submission-main .gold-button:hover,
 .submission-main button:focus-visible,.submission-main .gold-button:focus-visible{
- background-color:transparent;color:#92772d!important;
+ background-color:transparent;color:#856b25!important;
 }
 @supports((-webkit-background-clip:text) or (background-clip:text)){
  .submission-main button:not(:disabled),.submission-main .gold-button{
