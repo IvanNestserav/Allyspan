@@ -60,7 +60,7 @@ class Translator(HTMLParser):
     new=new[:-1]+' value="'+escape(value,quote=True)+'">'
    if tag=='a' and a.get('href'):
     href=a['href'];u=urlsplit(href)
-    if not u.netloc or u.netloc in ['allyspan.org','www.allyspan.org']:
+    if u.path and (not u.netloc or u.netloc in ['allyspan.org','www.allyspan.org']):
      p=u.path or '/'
      if p=='/home/':p='/'
      if p in ROUTES:
@@ -120,7 +120,7 @@ for language in ['en','es','zh-Hans']:
   source=prepare((ROOT/page).read_text());out=Translator(source,language,page).result()
   links=''.join('<link data-site-language rel="alternate" hreflang="'+lang+'" href="'+ORIGIN+localized(lang,route(page))+'">' for lang in ['en','es','zh-Hans'])
   links+='<link data-site-language rel="alternate" hreflang="x-default" href="'+ORIGIN+route(page)+'">'
-  assets='<link data-language-asset rel="stylesheet" href="/assets/i18n/language.css?v=1"><script data-language-asset src="/assets/i18n/'+language.lower()+'.js?v=1"></script><script data-language-asset src="/assets/i18n/language.js?v=1"></script>'
+  assets='<link data-language-asset rel="stylesheet" href="/assets/i18n/language.css?v=2"><script data-language-asset src="/assets/i18n/'+language.lower()+'.js?v=2"></script><script data-language-asset src="/assets/i18n/language.js?v=2"></script>'
   out=out.replace('</head>',links+assets+'</head>')
   if language!='en':
    if page=='resources/qr-studio/index.html':
@@ -140,7 +140,7 @@ for language in ['en','es','zh-Hans']:
 # Keep the existing mirrored home entry consistent without adding a duplicate indexed locale URL.
 (ROOT/'home/index.html').write_text((ROOT/'index.html').read_text())
 article=prepare((ROOT/ARTICLE).read_text())
-assets='<link data-language-asset rel="stylesheet" href="/assets/i18n/language.css?v=1"><script data-language-asset src="/assets/i18n/en.js?v=1"></script><script data-language-asset src="/assets/i18n/language.js?v=1"></script>'
+assets='<link data-language-asset rel="stylesheet" href="/assets/i18n/language.css?v=2"><script data-language-asset src="/assets/i18n/en.js?v=2"></script><script data-language-asset src="/assets/i18n/language.js?v=2"></script>'
 article=article.replace('</head>',assets+'</head>');(ROOT/ARTICLE).write_text(article)
 old=(ROOT/'sitemap.xml').read_text()
 for language in ['es','zh-Hans']:

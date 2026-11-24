@@ -3,6 +3,10 @@ const form=document.getElementById('submission-form'),steps=[...form.querySelect
 const t=window.AllyspanI18n?.t||((key,vars={})=>key.replace(/\{(\w+)\}/g,(_,name)=>vars[name]??''));
 const ranges=[[2500,5000],[2000,4000],[1500,3000],[1200,2500],[800,1500],[700,1200],[600,1000],[300,600]];
 const el=id=>document.getElementById(id),words=value=>(value.trim().match(/\S+/g)||[]).length;
+// Translate browser validation prompts without weakening existing custom checks.
+form.addEventListener('invalid',event=>{const input=event.target;if(!input.validity.customError){input.dataset.localizedValidity='true';input.setCustomValidity(t(input.validity.valueMissing?'This field is required.':input.validity.typeMismatch?'Please enter a valid email address.':'Please check this field.'))}},true);
+for(const event of ['input','change'])form.addEventListener(event,e=>{if(e.target.dataset.localizedValidity){delete e.target.dataset.localizedValidity;e.target.setCustomValidity('')}},true);
+
 let current=0,authorSequence=0;
 form.addEventListener('submit',e=>e.preventDefault());
 function show(n){current=n;steps.forEach((s,i)=>s.hidden=i!==n);markers.forEach((m,i)=>i===n?m.setAttribute('aria-current','step'):m.removeAttribute('aria-current'));error.hidden=true;if(n===2)summary(el('review-summary'),false);steps[n].querySelector('h3').focus({preventScroll:true});const top=scrollY+form.getBoundingClientRect().top-document.querySelector('.site-header').getBoundingClientRect().height-24;window.scrollTo({top:Math.max(0,top),behavior:'instant'})}

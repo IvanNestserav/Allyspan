@@ -12,6 +12,7 @@ for language in ['es','zh-hans']:
   assert d.xpath('//link[@rel="canonical"]/@href')==['https://www.allyspan.org/'+language+route(page)],p
   assert set(d.xpath('//link[@hreflang]/@hreflang'))=={'en','es','zh-Hans','x-default'},p
   assert d.xpath('//*[@data-language-open]'),p
+  assert d.xpath('//a[contains(@class,"skip-content")]/@href')==['#main-content'],p
   assert not d.xpath('//*[@id="languages-panel"]'),p
   assert not d.xpath('//footer//a'),p
   assert not d.xpath('//nav[contains(@class,"related-resources")]'),p

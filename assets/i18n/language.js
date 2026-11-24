@@ -8,6 +8,8 @@ let saved='en';try{saved=localStorage.getItem('allyspan-language')||'en'}catch{}
 if(!['en','es','zh-Hans'].includes(saved))saved='en';
 const path=basePath(location.pathname),known=config.routes.includes(path),isArticle=path==='/showcase/publications/psychedelics-in-new-york-city/';
 function init(){
+ if(locale!=='en'){saved=locale;try{localStorage.setItem('allyspan-language',locale)}catch{}}
+ if(new URLSearchParams(location.search).get('lang')==='en'){saved='en';try{localStorage.setItem('allyspan-language','en')}catch{}}
  // Explicit locale URLs always win. Remembered preference is applied to English entry pages only.
  if(locale==='en'&&known&&saved!=='en'&&!location.search){location.replace(pathFor(saved,path)+location.hash);return}
  const dialog=document.createElement('dialog');dialog.className='language-dialog';dialog.id='language-dialog';dialog.setAttribute('aria-labelledby','language-dialog-title');
