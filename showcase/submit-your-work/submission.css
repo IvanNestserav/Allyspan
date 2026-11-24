@@ -4,3 +4,45 @@
 
 
 .submission-honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}.submission-confirmation{margin:40px 0;padding:28px;border-left:3px solid #92772d;background:rgba(146,119,45,.06)}
+
+/* Gold text actions with open, curved corner accents. */
+.submission-main button,.submission-main .gold-button,.submission-main .gold-button:visited{
+ position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;
+ min-height:48px;padding:12px 22px;border:0;border-radius:0;background:transparent;
+ color:#856b25!important;font:400 1.125rem/1.5 Arial,sans-serif;text-align:center;
+ box-shadow:none;text-decoration:none;
+}
+.submission-main button::before,.submission-main button::after,
+.submission-main .gold-button::before,.submission-main .gold-button::after{
+ content:"";position:absolute;width:15px;height:11px;border:solid #92772d;pointer-events:none;
+}
+.submission-main button::before,.submission-main .gold-button::before{
+ top:2px;left:2px;border-width:1px 0 0 1px;border-top-left-radius:9px;
+}
+.submission-main button::after,.submission-main .gold-button::after{
+ bottom:2px;right:2px;border-width:0 1px 1px 0;border-bottom-right-radius:9px;
+}
+.submission-main button:hover,.submission-main .gold-button:hover,
+.submission-main button:focus-visible,.submission-main .gold-button:focus-visible{
+ background-color:transparent;color:#92772d!important;
+}
+@supports((-webkit-background-clip:text) or (background-clip:text)){
+ .submission-main button:not(:disabled),.submission-main .gold-button{
+  background-image:linear-gradient(110deg,#856b25 0%,#856b25 42%,#b19a58 50%,#856b25 58%,#856b25 100%);
+  background-size:250% 100%;background-position:100% 50%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:gold-action-shimmer 1.8s ease-in-out .3s 1 forwards;
+ }
+}
+@keyframes gold-action-shimmer{from{background-position:100% 50%}to{background-position:-100% 50%}}
+.submission-main button:disabled{
+ color:#69736c!important;background:none;-webkit-text-fill-color:currentColor;cursor:not-allowed;animation:none;
+}
+.submission-main button:disabled::before,.submission-main button:disabled::after{border-color:#9a9f97}
+@media(prefers-reduced-motion:reduce){
+ .submission-main button,.submission-main .gold-button{animation:none!important;background:none;-webkit-text-fill-color:currentColor}
+}
+@media(forced-colors:active){
+ .submission-main button,.submission-main .gold-button{animation:none!important;background:none;-webkit-text-fill-color:currentColor;color:ButtonText!important}
+ .submission-main button::before,.submission-main button::after,.submission-main .gold-button::before,.submission-main .gold-button::after{border-color:ButtonText}
+}
