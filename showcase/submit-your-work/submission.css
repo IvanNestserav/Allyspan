@@ -70,3 +70,9 @@
   animation:none!important;background:none;-webkit-text-fill-color:currentColor;color:ButtonText!important;
  }
 }
+
+.submission-main button:not(:hover),.submission-main .gold-button:not(:hover){
+ animation:none!important;background-image:none;background-color:transparent;
+ -webkit-text-fill-color:currentColor;color:#856b25!important;
+}
+.submission-main button:disabled:not(:hover){color:#69736c!important}
