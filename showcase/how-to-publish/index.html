@@ -44,7 +44,7 @@ body{background-color:#fdfbf5;background-image:url('/assets/ivory-background.web
 .sidebar-submit .submission-entry::after{bottom:2px;right:2px;border-width:0 1px 1px 0;border-bottom-right-radius:9px}
 @supports((-webkit-background-clip:text) or (background-clip:text)){
 .sidebar-submit .submission-entry{background-image:linear-gradient(110deg,#856b25 0%,#856b25 42%,#b19a58 50%,#856b25 58%,#856b25 100%);background-size:250% 100%;background-position:100% 50%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.sidebar-submit .submission-entry:hover,.sidebar-submit .submission-entry:focus-visible{animation:submission-text-shimmer 1.8s ease-in-out 1 forwards}
+.sidebar-submit .submission-entry:hover{animation:submission-text-shimmer 1.8s ease-in-out 1 forwards}
 }
 @keyframes submission-text-shimmer{from{background-position:100% 50%}to{background-position:-100% 50%}}
 @media(prefers-reduced-motion:reduce){.sidebar-submit .submission-entry{animation:none!important;background:none;-webkit-text-fill-color:currentColor}}
