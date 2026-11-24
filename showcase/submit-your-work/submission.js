@@ -20,4 +20,47 @@ function validate(){const invalid=[...steps[current].querySelectorAll('input,tex
 form.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{if(validate())show(Number(b.dataset.next))}));form.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>show(Number(b.dataset.back))));
 function summary(container,all){container.replaceChildren();const dl=document.createElement('dl');const rows=[['Article title',el('title').value],['Article type',el('article-type').value],['Main topic',el('topic').value],['Word count',el('word-count').value],['Summary',el('summary').value],['Keywords',el('keywords').value],['Manuscript',el('manuscript').files[0]?.name||'None'],['Companion PDF',el('pdf').files[0]?.name||'None'],['Supporting images',[...el('visuals').files].map(f=>f.name).join(', ')||'None'],['Language',el('language').value],['Translation notes',el('language-notes').value],['Publication name',el('author-name').value],['Private email',el('email').value],['Role or affiliation',el('affiliation').value],['ORCID',el('orcid').value],['Biography',el('biography').value],['Contribution',el('contribution').value],['Safety request',el('safety').value]];form.querySelectorAll('.coauthor input,.coauthor textarea,.visual-detail textarea').forEach(x=>rows.push([x.labels[0].textContent.replace(' *',''),x.value]));if(all){['funding','ai','participants','ethics','permissions'].forEach(id=>{if(!el(id).closest('[hidden]'))rows.push([el(id).labels[0].textContent.replace(' *',''),el(id).value])});rows.push(['Declarations','All four declarations confirmed.'])}rows.filter(([,v])=>v).forEach(([k,v])=>{const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=k;dd.textContent=v;dl.append(dt,dd)});container.append(dl)}
 el('preview-submission').addEventListener('click',()=>{if(validate()){summary(el('preview-content'),true);el('preview-dialog').showModal()}});el('close-preview').addEventListener('click',()=>el('preview-dialog').close());
+// Live delivery is explicitly disabled until the Worker and receipt flow pass real delivery checks.
+const liveConfig=window.ALLYSPAN_JOURNAL||{},sendButton=el('send-submission');
+let apiBase='',securityWidget=null,securityToken='',sending=false,submissionId=null;
+const MAX_ATTACHMENT_BYTES=10*1024*1024;
+function totalBytes(){return ['manuscript','pdf','visuals'].reduce((sum,id)=>sum+[...el(id).files].reduce((n,f)=>n+f.size,0),0)}
+function fileSizeCheck(){const file=el('manuscript').files[0];el('manuscript').setCustomValidity(totalBytes()>MAX_ATTACHMENT_BYTES?'Attachments must total no more than 10 MB.':file&&!['docx','doc','pages','txt','rtf','odt'].includes(file.name.split('.').pop().toLowerCase())?'Choose a supported file format.':'')}
+['manuscript','pdf','visuals'].forEach(id=>el(id).addEventListener('change',fileSizeCheck));
+function problem(message){error.textContent=message;error.hidden=false;error.focus()}
+function refreshSend(){sendButton.disabled=sending||!apiBase||!securityToken;}
+function resetSecurity(){securityToken='';if(securityWidget!==null&&window.turnstile)window.turnstile.reset(securityWidget);refreshSend()}
+async function bootLive(){
+ if(liveConfig.enabled!==true||!liveConfig.apiBase)return;
+ try{
+  const candidate=new URL(liveConfig.apiBase);if(candidate.protocol!=='https:'||candidate.search||candidate.hash||candidate.pathname!=='/'||candidate.hostname==='www.allyspan.org')return;
+  const res=await fetch(candidate.origin+'/config',{cache:'no-store',credentials:'omit'});if(!res.ok)return;const cfg=await res.json();if(!cfg.open||!cfg.siteKey||cfg.maxAttachmentBytes!==MAX_ATTACHMENT_BYTES)return;
+  apiBase=candidate.origin;
+  const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.async=true;
+  script.addEventListener('load',()=>{
+   securityWidget=window.turnstile.render('#journal-security-check',{sitekey:cfg.siteKey,action:'journal-submit',appearance:'interaction-only',callback:token=>{securityToken=token;refreshSend()},'expired-callback':()=>{securityToken='';refreshSend()},'error-callback':()=>{securityToken='';refreshSend()}});
+   const notice=document.querySelector('.preview-notice');notice.querySelector('strong').textContent='Submissions are open';notice.querySelector('p').textContent='Send your manuscript privately for editorial review. Nothing is published automatically.';
+   document.querySelector('.send-note').textContent='Your manuscript will be sent privately to the Journal. We will email a receipt after delivery.';
+   el('send-status').textContent='Questions or withdrawal requests: journal@allyspan.org';
+   document.querySelector('.form-heading p:last-child').textContent='Required fields are marked *. Do not include confidential participant records.';
+   el('preview-dialog').querySelector('p').textContent='Review your details before sending. Nothing is published automatically.';
+  });
+  script.addEventListener('error',()=>{apiBase='';refreshSend();problem('The security check could not load. Please try again later.');});document.head.append(script);
+ }catch{/* Fail closed. No author data is sent while configuration is unavailable. */}
+}
+function buildPayload(){const data=new FormData(form);form.querySelectorAll('#language-extra[hidden] input,#language-extra[hidden] textarea,#ethics-extra[hidden] textarea').forEach(input=>data.delete(input.name));data.set('submission-id',submissionId);data.set('cf-turnstile-response',securityToken);return data;}
+sendButton.addEventListener('click',async()=>{
+ if(sending||!apiBase||!securityToken)return;
+ for(let i=0;i<steps.length;i++){const invalid=[...steps[i].querySelectorAll('input,textarea,select')].find(input=>!input.closest('#language-extra[hidden],#ethics-extra[hidden]')&&!input.checkValidity());if(invalid){show(i);invalid.reportValidity();return;}}
+ if(totalBytes()>MAX_ATTACHMENT_BYTES){problem('Attachments must total no more than 10 MB.');return;}
+ submissionId??=crypto.randomUUID();sending=true;refreshSend();sendButton.textContent='Sending...';error.hidden=true;
+ try{
+  const res=await fetch(apiBase+'/submit',{method:'POST',body:buildPayload(),credentials:'omit',signal:AbortSignal.timeout(65000)});let result;try{result=await res.json()}catch{throw Error('We could not confirm delivery. Keep this page open and try again.');}
+  if(!res.ok||result.received!==true||typeof result.reference!=='string')throw Error(result.error||'We could not confirm delivery. Please try again.');
+  form.hidden=true;const section=document.createElement('section');section.className='submission-confirmation';section.tabIndex=-1;const h=document.createElement('h2');h.textContent='Thank you for your submission';const text=document.createElement('p');text.textContent='Your work has been received for editorial review. Nothing has been published.';const ref=document.createElement('p');ref.textContent='Your reference: '+result.reference;const receipt=document.createElement('p');receipt.textContent=result.receiptSent?'A receipt email has been requested. If it does not arrive, check spam or contact journal@allyspan.org with your reference.':result.message;const timing=document.createElement('p');timing.textContent='We aim to give an initial response within 15 business days of a complete submission.';section.append(h,text,ref,receipt,timing);form.after(section);section.focus();section.scrollIntoView({block:'center'});
+ }catch(e){problem(e.message||'We could not confirm delivery. Keep the form open and try again.');resetSecurity();}
+ finally{sending=false;sendButton.textContent='Send for editorial review';refreshSend()}
+});
+bootLive();
+
 })();

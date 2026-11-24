@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "allyspan-journal-submissions",
+  "main": "worker.js",
+  "compatibility_date": "2026-11-23",
+  "workers_dev": true,
+  "keep_vars": true,
+  "observability": {"enabled": false},
+  "vars": {"SUBMISSIONS_OPEN": "false", "TURNSTILE_SITE_KEY": ""},
+  "ratelimits": [{"name":"JOURNAL_RATE_LIMITER","namespace_id":"782631904","simple":{"limit":5,"period":60}}]
+}
