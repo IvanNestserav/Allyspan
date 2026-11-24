@@ -94,6 +94,8 @@ class Translator(HTMLParser):
   return out
 
 def prepare(source):
+ if '/assets/navigation.js' not in source:
+  source=source.replace('</head>','<script defer src="/assets/navigation.js?v=1"></script></head>')
  # Reuse the site's approved emblem instead of duplicating its large inline PNG per language.
  source=re.sub(r'src="data:image/png;base64,[A-Za-z0-9+/=\s]+"','src="/assets/emblem.png"',source)
  source=re.sub(r'<link[^>]*data-site-language[^>]*>','',source)
