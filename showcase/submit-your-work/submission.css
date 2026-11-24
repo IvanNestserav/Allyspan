@@ -46,3 +46,29 @@
  .submission-main button,.submission-main .gold-button{animation:none!important;background:none;-webkit-text-fill-color:currentColor;color:ButtonText!important}
  .submission-main button::before,.submission-main button::after,.submission-main .gold-button::before,.submission-main .gold-button::after{border-color:ButtonText}
 }
+
+/* Preserve clipped gold text when older hover rules reset the background. */
+@supports((-webkit-background-clip:text) or (background-clip:text)){
+ .submission-main button:not(:disabled):hover,
+ .submission-main button:not(:disabled):focus-visible,
+ .submission-main .gold-button:hover,
+ .submission-main .gold-button:focus-visible{
+  background-image:linear-gradient(110deg,#856b25 0%,#856b25 42%,#b19a58 50%,#856b25 58%,#856b25 100%);
+  background-color:transparent;background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  color:#856b25!important;animation:gold-action-hover-shimmer 1.8s ease-in-out 1 forwards;
+ }
+}
+@keyframes gold-action-hover-shimmer{from{background-position:100% 50%}to{background-position:-100% 50%}}
+@media(prefers-reduced-motion:reduce){
+ .submission-main button:not(:disabled):hover,.submission-main button:not(:disabled):focus-visible,
+ .submission-main .gold-button:hover,.submission-main .gold-button:focus-visible{
+  animation:none!important;background:none;-webkit-text-fill-color:currentColor;color:#856b25!important;
+ }
+}
+@media(forced-colors:active){
+ .submission-main button:not(:disabled):hover,.submission-main button:not(:disabled):focus-visible,
+ .submission-main .gold-button:hover,.submission-main .gold-button:focus-visible{
+  animation:none!important;background:none;-webkit-text-fill-color:currentColor;color:ButtonText!important;
+ }
+}
