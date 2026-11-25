@@ -1,0 +1,17 @@
+.qr-faq-entry{margin:28px 0 0;text-align:left}
+.qr-text-action,.qr-text-action:visited,.qr-text-action:hover{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border:0;border-radius:0;background-color:transparent;font:400 18px/1.5 Arial,sans-serif;color:#856b25!important;text-decoration:none;-webkit-text-fill-color:currentColor}
+.qr-text-action::before,.qr-text-action::after{content:'';position:absolute;width:15px;height:11px;border:solid #92772d;pointer-events:none}
+.qr-text-action::before{top:2px;left:2px;border-width:1px 0 0 1px;border-top-left-radius:9px}
+.qr-text-action::after{bottom:2px;right:2px;border-width:0 1px 1px 0;border-bottom-right-radius:9px}
+.qr-text-action:focus-visible{outline:2px solid #92772d;outline-offset:5px}
+.qr-faq-main{max-width:880px;margin:0 auto;width:100%}
+.qr-faq-main .intro{text-align:left;margin-bottom:28px}
+.qr-faq-main h1{font:400 clamp(32px,5vw,48px)/1.3 Georgia,serif;color:#294d43;margin:12px 0 20px}
+.qr-faq-main .qr-info{margin-top:0;padding-top:0;border-top:0}
+.qr-faq-main .qr-info details:last-child{border-bottom:1px solid #ded8c9}
+@supports((-webkit-background-clip:text) or (background-clip:text)){
+.qr-text-action:hover{background-image:linear-gradient(110deg,#856b25 0%,#856b25 42%,#b19a58 50%,#856b25 58%,#856b25 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:qr-link-shimmer 1.8s ease-in-out 1 forwards}
+}
+@keyframes qr-link-shimmer{from{background-position:100% 50%}to{background-position:-100% 50%}}
+@media(prefers-reduced-motion:reduce){.qr-text-action:hover{animation:none;background:none;-webkit-text-fill-color:currentColor}}
+@media(forced-colors:active){.qr-text-action:hover{animation:none;background:none;-webkit-text-fill-color:currentColor;color:LinkText!important}.qr-text-action::before,.qr-text-action::after{border-color:LinkText}}

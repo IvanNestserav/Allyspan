@@ -13,7 +13,7 @@ HERE = Path(__file__).resolve().parent
 ORIGIN = 'https://www.allyspan.org'
 PAGES = ['index.html','about/allyspan-and-logo/index.html','about/our-mission/index.html',
  'about/our-support/index.html','about/connect/index.html',
- 'resources/introduction-to-classroom-studio/index.html','resources/qr-studio/index.html',
+ 'resources/introduction-to-classroom-studio/index.html','resources/qr-studio/index.html','resources/qr-studio/faq/index.html',
  'showcase/publications/index.html','showcase/how-to-publish/index.html',
  'showcase/submit-your-work/index.html','showcase/submission-privacy/index.html']
 ARTICLE = 'showcase/publications/psychedelics-in-new-york-city/index.html'
@@ -28,6 +28,7 @@ assert len(DICTS['es'])==len(KEYS), 'Incomplete translation catalogue'
 for row in (HERE/'extras.tsv').read_text().splitlines():
  key,es,zh=row.split('\t');DICTS['es'][key]=es;DICTS['zh-Hans'][key]=zh
 META={
+ 'resources/qr-studio/faq/index.html':('Aprende a crear, descargar, probar e imprimir códigos QR gratis, proteger tus enlaces y usarlos en clases y talleres.','了解如何创建、下载、测试与打印免费二维码，如何保护链接隐私，以及如何用于课堂和工作坊。'),
  'index.html':('Explora la misión de Allyspan, Classroom Studio multilingüe, el generador QR gratis y nuestras publicaciones comunitarias.','了解 Allyspan 的社区使命、多语言 Classroom Studio、免费二维码生成器与社区议题出版物。'),
  'about/allyspan-and-logo/index.html':('Conoce el significado del nombre Allyspan, su árbol y sol dorados, y nuestro compromiso con la dignidad y el apoyo.','了解 Allyspan 名称、金色树与太阳徽标的寓意，以及我们对尊严、联结与持续支持的承诺。'),
  'about/our-mission/index.html':('Conoce la misión de Allyspan: dignidad, lucha contra la opresión, recursos comunitarios y aprendizaje accesible.','了解 Allyspan 如何通过社区资源导航、无障碍学习与公共讨论，践行尊严、反压迫与公平可及。'),
@@ -122,8 +123,25 @@ for language in ['en','es','zh-Hans']:
   source=prepare((ROOT/page).read_text());out=Translator(source,language,page).result()
   links=''.join('<link data-site-language rel="alternate" hreflang="'+lang+'" href="'+ORIGIN+localized(lang,route(page))+'">' for lang in ['en','es','zh-Hans'])
   links+='<link data-site-language rel="alternate" hreflang="x-default" href="'+ORIGIN+route(page)+'">'
-  assets='<link data-language-asset rel="stylesheet" href="/assets/i18n/language.css?v=2"><script data-language-asset src="/assets/i18n/'+language.lower()+'.js?v=2"></script><script data-language-asset src="/assets/i18n/language.js?v=2"></script>'
+  assets='<link data-language-asset rel="stylesheet" href="/assets/i18n/language.css?v=3"><script data-language-asset src="/assets/i18n/'+language.lower()+'.js?v=3"></script><script data-language-asset src="/assets/i18n/language.js?v=3"></script>'
   out=out.replace('</head>',links+assets+'</head>')
+  if page=='resources/qr-studio/faq/index.html':
+   def localize_faq_schema(match):
+    data=json.loads(match[1])
+    for item in data.get('@graph',[]):
+     if item.get('@type')=='FAQPage':
+      item['url']=ORIGIN+localized(language,route(page));item['@id']=item['url']+'#webpage';item['inLanguage']=language
+      item['name']=dictionary.get('QR Studio FAQ | Allyspan','QR Studio FAQ | Allyspan')
+      if language!='en':item['description']=META[page][0 if language=='es' else 1]
+      for question in item.get('mainEntity',[]):
+       question['name']=dictionary.get(question['name'],question['name'])
+       question['acceptedAnswer']['text']=Translator(question['acceptedAnswer']['text'],language,page).result()
+     if item.get('@type')=='BreadcrumbList':
+      for crumb in item['itemListElement']:
+       crumb['name']=dictionary.get(crumb['name'],crumb['name'])
+       crumb['item']=ORIGIN+localized(language,urlsplit(crumb['item']).path)
+    return '<script type="application/ld+json">'+json.dumps(data,ensure_ascii=False)+'</script>'
+   out=re.sub(r'<script type="application/ld\+json">([\s\S]*?)</script>',localize_faq_schema,out,count=1)
   if language!='en':
    if page=='resources/qr-studio/index.html':
     heading='Crea tu <em>código <span class="title-gold">QR</span></em>' if language=='es' else '创建你的 <em><span class="title-gold">二维码</span></em>'
@@ -142,12 +160,12 @@ for language in ['en','es','zh-Hans']:
 # Keep the existing mirrored home entry consistent without adding a duplicate indexed locale URL.
 (ROOT/'home/index.html').write_text((ROOT/'index.html').read_text())
 article=prepare((ROOT/ARTICLE).read_text())
-assets='<link data-language-asset rel="stylesheet" href="/assets/i18n/language.css?v=2"><script data-language-asset src="/assets/i18n/en.js?v=2"></script><script data-language-asset src="/assets/i18n/language.js?v=2"></script>'
+assets='<link data-language-asset rel="stylesheet" href="/assets/i18n/language.css?v=3"><script data-language-asset src="/assets/i18n/en.js?v=3"></script><script data-language-asset src="/assets/i18n/language.js?v=3"></script>'
 article=article.replace('</head>',assets+'</head>');(ROOT/ARTICLE).write_text(article)
 old=(ROOT/'sitemap.xml').read_text()
-for language in ['es','zh-Hans']:
+for language in ['en','es','zh-Hans']:
  for page in PAGES:
   url=ORIGIN+localized(language,route(page))
   if '<loc>'+url+'</loc>' not in old:old=old.replace('</urlset>','  <url><loc>'+url+'</loc></url>\n</urlset>')
 (ROOT/'sitemap.xml').write_text(old)
-print('Built 22 localized pages, updated 13 English entry pages, language assets and sitemap.')
+print(f'Built {len(PAGES)*2} localized pages, updated English pages, language assets and sitemap.')

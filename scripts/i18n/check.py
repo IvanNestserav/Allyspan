@@ -3,7 +3,7 @@ from lxml import html, etree
 import json, re, hashlib, subprocess
 
 ROOT=Path(__file__).resolve().parents[2]
-PAGES=['index.html','about/allyspan-and-logo/index.html','about/our-mission/index.html','about/our-support/index.html','about/connect/index.html','resources/introduction-to-classroom-studio/index.html','resources/qr-studio/index.html','showcase/publications/index.html','showcase/how-to-publish/index.html','showcase/submit-your-work/index.html','showcase/submission-privacy/index.html']
+PAGES=['index.html','about/allyspan-and-logo/index.html','about/our-mission/index.html','about/our-support/index.html','about/connect/index.html','resources/introduction-to-classroom-studio/index.html','resources/qr-studio/index.html','resources/qr-studio/faq/index.html','showcase/publications/index.html','showcase/how-to-publish/index.html','showcase/submit-your-work/index.html','showcase/submission-privacy/index.html']
 def route(p):return '/' if p=='index.html' else '/'+p.removesuffix('index.html')
 for language in ['es','zh-hans']:
  for page in PAGES:
